@@ -1,0 +1,74 @@
+import tkinter as tk
+import base64
+
+# Function to encode
+def encode(key, clear):
+    enc = []
+    for i in range(len(clear)):
+        key_c = key[i % len(key)]
+        enc_c = chr((ord(clear[i]) + ord(key_c)) % 256)
+        enc.append(enc_c)
+    return base64.urlsafe_b64encode("".join(enc).encode()).decode()
+
+# Function to decode
+def decode(key, enc):
+    dec = []
+    enc = base64.urlsafe_b64decode(enc).decode()
+    for i in range(len(enc)):
+        key_c = key[i % len(key)]
+        dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
+        dec.append(dec_c)
+    return "".join(dec)
+
+# Function to handle encryption or decryption based on mode
+def process():
+    message = msg_entry.get()
+    key = key_entry.get()
+    mode = mode_entry.get()
+
+    if mode == 'e':
+        result = encode(key, message)
+    elif mode == 'd':
+        result = decode(key, message)
+    else:
+        result = "Invalid mode, use 'e' for encrypt and 'd' for decrypt."
+    
+    result_label.config(text=f"Result: {result}")
+
+# Create the main window
+root = tk.Tk()
+root.title("Vigenère Cipher")
+root.geometry("400x300")
+
+# Message entry
+msg_label = tk.Label(root, text="Message:")
+msg_label.pack(pady=5)
+msg_entry = tk.Entry(root, width=40)
+msg_entry.pack(pady=5)
+
+# Key entry
+key_label = tk.Label(root, text="Key:")
+key_label.pack(pady=5)
+key_entry = tk.Entry(root, width=40)
+key_entry.pack(pady=5)
+
+# Mode entry
+mode_label = tk.Label(root, text="Mode (e for encrypt, d for decrypt):")
+mode_label.pack(pady=5)
+mode_entry = tk.Entry(root, width=40)
+mode_entry.pack(pady=5)
+
+# Result label
+result_label = tk.Label(root, text="Result:")
+result_label.pack(pady=10)
+
+# Process button
+process_button = tk.Button(root, text="Process", command=process)
+process_button.pack(pady=10)
+
+# Exit button
+exit_button = tk.Button(root, text="Exit", command=root.quit)
+exit_button.pack(pady=5)
+
+# Run the application
+root.mainloop()
